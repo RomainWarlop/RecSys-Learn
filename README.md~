@@ -1,0 +1,8 @@
+# Recommender Systems Survey
+
+Here is a library of algorithms for recommender system. This is part of my Recommender Systems Survey available 
+<a href="http://rwarloplabs.com/machinelearning/posts/recommendersystemssurvey.php" target=_blank> here </a>
+
+## List of reviewed algorithms
+
+* ALS-WR : Alternating-Least-Squares with Weighted-λ-Regularization
