@@ -14,7 +14,7 @@ import itertools
 #from sklearn.ensemble import RandomForestRegressor as RFR
 from sklearn.ensemble import RandomForestClassifier as RFC
 
-from rslearn.utils import sparseMatrix, RMSE, getLine_fromdict, extract_year
+from rslearn.utils import sparse_matrix, RMSE, getLine_fromdict, extract_year
 from rslearn.ALSWR.alswr import ALS
 from rslearn.RSVD.rsvd import RSVD
 from rslearn.graphReg.graph_regularized import graphALS, multipleGraphALS, GNMF
@@ -55,6 +55,9 @@ numItem = len(set(data['item']))
 data['user'] -= 1
 data['item'] -= 1
 
+data = data.rename(columns={'user':'row','item':'col','rating':'val'})
+
+
 #==============================================================================
 # ALS-WR
 #==============================================================================
@@ -72,11 +75,13 @@ if params['ALS-WR']['learn']=="True":
         current_perf['crossval'] = k
         print(current_perf)
         bob = ALS(d=r,num_users=numUser,num_items=numItem,lbda=l,parallel=True)
+        train = data[data['cv']!=k][['row','col','val']].to_dict(orient='list')
+        test = data[data['cv']==k][['row','col','val']].to_dict(orient='list')
         t0 = time()
-        bob.fit(data[data['cv']!=k])
+        bob.fit(train)
         T = time()-t0
         Rhat = bob.U.dot(bob.V.T)
-        R_test = sparseMatrix(data,k,include=True)
+        R_test = sparse_matrix(test,numUser,numItem)
         rmse = RMSE(R_test,Rhat)
         print(rmse)
         ind = getLine_fromdict(perf,current_perf)
@@ -103,16 +108,33 @@ if params['bagging ALS-WR']['learn']=="True":
         print(current_perf)
         bob = bag_ALS(d=r,num_users=numUser,num_items=numItem,split='item',sampling=.9,
                       num_estimators = 10,lbda=l,verbose=True)
+        train = data[data['cv']!=k][['row','col','val']].to_dict(orient='list')
+        test = data[data['cv']==k][['row','col','val']].to_dict(orient='list')
         t0 = time()
-        bob.fit(data[data['cv']!=k])
+        bob.fit(train)
         T = time()-t0
         Rhats, Rhat = bob.predict()
-        R_test = sparseMatrix(data,k,include=True)
+        R_test = sparse_matrix(test,numUser,numItem)
         rmse = RMSE(R_test,Rhat)
         print(rmse)
         ind = getLine_fromdict(perf,current_perf)
         perf.loc[ind,['model','rank','lambda','crossval','rmse','runningTime']] = ['bagALS-WR',r,l,k,rmse,T]
     print('-'*50)
+
+
+##################################
+# MODIFY FROM HERE
+##################################
+##################################
+##################################
+##################################
+##################################
+##################################
+##################################
+##################################
+##################################
+##################################
+
 
 #==============================================================================
 # contextual ALS-WR

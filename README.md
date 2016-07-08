@@ -1,5 +1,8 @@
 # Recommender Systems Survey
 
+TO DO :
+* Modify input to dict in exp
+
 Here is a library of algorithms for recommender system. This is part of my Recommender Systems Survey available 
 <a href="http://rwarloplabs.com/machinelearning/posts/recommendersystemssurvey.php" target=_blank> here </a>
 
